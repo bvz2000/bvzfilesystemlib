@@ -107,7 +107,8 @@ def symlinks_to_real_paths(symlinks_p):
 
 # ----------------------------------------------------------------------------------------------------------------------
 def recursively_list_files_in_dirs(source_dirs_d):
-    """Recursively list all the files in the directory or directories
+    """
+    Recursively list all the files in the directory or directories
 
     :param source_dirs_d:
             The directory or list of directories we want to recursively list. Accepts either a string or a list.
@@ -134,6 +135,60 @@ def recursively_list_files_in_dirs(source_dirs_d):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
+def recursively_list_symlink_targets_in_dirs(source_dirs_d):
+    """
+    Recursively list all of the symlink targets of all the files in the directory or directories.
+
+    :param source_dirs_d:
+                The directory or list of directories we want to recursively list. Accepts either a string or a list.
+
+    :return:
+            A list of files with full paths that are in any of the directories (or any of their sub-directories)
+    """
+
+    assert type(source_dirs_d) is list or type(source_dirs_d) is str
+
+    if type(source_dirs_d) is str:
+        source_dirs_d = [source_dirs_d]
+
+    for source_dir_d in source_dirs_d:
+        assert os.path.exists(source_dir_d)
+
+    output = list()
+
+    files_p = recursively_list_files_in_dirs(source_dirs_d)
+    for file_p in files_p:
+        if os.path.islink(file_p) and os.path.exists(file_p):
+            output.append(os.readlink(file_p))
+
+    return output
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+def add_file_to_dict_by_size(file_p,
+                             dict_files_by_size):
+    """
+    Given a file path, adds it to the dictionary keyed by file size.
+
+    :param file_p:
+            The path of the file to add to the dictionary.
+    :param dict_files_by_size:
+            The dictionary that contains the files keyed by file sizes.
+
+    :return:
+            Nothing.
+    """
+
+    file_size = os.path.getsize(file_p)
+    if file_size not in dict_files_by_size.keys():
+        dict_files_by_size[file_size] = [file_p]
+    else:
+        existing_files = dict_files_by_size[file_size]
+        existing_files.append(file_p)
+        dict_files_by_size[file_size] = existing_files
+
+
+# ----------------------------------------------------------------------------------------------------------------------
 def dir_files_keyed_by_size(path_d):
     """
     Builds a dictionary of file sizes in a directory. The key is the file size, the value is a list of file names.
@@ -152,13 +207,7 @@ def dir_files_keyed_by_size(path_d):
     files_n = os.listdir(path_d)
     for file_n in files_n:
         file_p = os.path.join(path_d, file_n)
-        file_size = os.path.getsize(file_p)
-        if file_size not in output.keys():
-            output[file_size] = [file_p]
-        else:
-            existing_files = output[file_size]
-            existing_files.append(file_p)
-            output[file_size] = existing_files
+        add_file_to_dict_by_size(file_p, output)
     return output
 
 
