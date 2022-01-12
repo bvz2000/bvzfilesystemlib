@@ -15,8 +15,12 @@ def count_files_recursively(dir_d):
             In integer of the number of files found.
     """
 
-    assert os.path.exists(dir_d)
-    assert os.path.isdir(dir_d)
+    assert type(dir_d) is str
+
+    if not os.path.exists(dir_d):
+        raise ValueError(f"{dir_d} does not exist.")
+    if not os.path.isdir(dir_d):
+        raise ValueError(f"{dir_d} is not a directory.")
 
     return sum(len(files) for x, y, files in os.walk(dir_d))
 
@@ -41,10 +45,13 @@ def invert_dir_list(parent_d,
             A list of all sub directories in parent_d that are not in the list subdirs_n.
     """
 
-    assert os.path.exists(parent_d)
-    assert os.path.isdir(parent_d)
     assert type(subdirs_n) is list
     assert pattern is None or type(pattern) is str
+
+    if not os.path.exists(parent_d):
+        raise ValueError(f"{parent_d} does not exist.")
+    if not os.path.isdir(parent_d):
+        raise ValueError(f"{parent_d} is not a directory.")
 
     items_n = os.listdir(parent_d)
     output = list()
@@ -79,8 +86,8 @@ def convert_unix_path_to_os_path(path):
     return os.path.join(*path.lstrip("/").split("/"))
 
 
-# TODO: Make windows friendly
 # ----------------------------------------------------------------------------------------------------------------------
+# TODO: Make windows friendly
 def symlinks_to_real_paths(symlinks_p):
     """
     Given a list of symbolic link files, return a list of their real paths. Only
@@ -94,6 +101,8 @@ def symlinks_to_real_paths(symlinks_p):
     :return:
             A list of the real paths being pointed to by the symlinks.
     """
+
+    assert type(symlinks_p) is list or type(symlinks_p) is str
 
     if type(symlinks_p) != list:
         symlinks_p = list(symlinks_p)
@@ -123,7 +132,10 @@ def recursively_list_files_in_dirs(source_dirs_d):
         source_dirs_d = [source_dirs_d]
 
     for source_dir_d in source_dirs_d:
-        assert os.path.exists(source_dir_d)
+        if not  os.path.exists(source_dir_d):
+            raise ValueError(f"{source_dir_d} does not exist.")
+        if not os.path.isdir(source_dir_d):
+            raise ValueError(f"{source_dir_d} is not a directory.")
 
     output = list()
 
@@ -152,7 +164,10 @@ def recursively_list_symlink_targets_in_dirs(source_dirs_d):
         source_dirs_d = [source_dirs_d]
 
     for source_dir_d in source_dirs_d:
-        assert os.path.exists(source_dir_d)
+        if not  os.path.exists(source_dir_d):
+            raise ValueError(f"{source_dir_d} does not exist.")
+        if not os.path.isdir(source_dir_d):
+            raise ValueError(f"{source_dir_d} is not a directory.")
 
     output = list()
 
@@ -179,6 +194,14 @@ def add_file_to_dict_by_size(file_p,
             Nothing.
     """
 
+    assert type(file_p) is str
+    assert type(dict_files_by_size) is dict
+
+    if not os.path.exists(file_p):
+        raise ValueError(f"{file_p} does not exist.")
+    if os.path.isdir(file_p):
+        raise ValueError(f"{file_p} is a directory. Should be a file.")
+
     file_size = os.path.getsize(file_p)
     if file_size not in dict_files_by_size.keys():
         dict_files_by_size[file_size] = [file_p]
@@ -200,7 +223,12 @@ def dir_files_keyed_by_size(path_d):
             A dict where the key is the file size, the value is a list of paths to the files of this size.
     """
 
-    assert os.path.exists(path_d)
+    assert type(path_d) is str
+
+    if not os.path.exists(path_d):
+        raise ValueError(f"{path_d} does not exist.")
+    if not os.path.isdir(path_d):
+        raise ValueError(f"{path_d} is not a directory.")
 
     output = dict()
 
@@ -209,6 +237,22 @@ def dir_files_keyed_by_size(path_d):
         file_p = os.path.join(path_d, file_n)
         add_file_to_dict_by_size(file_p, output)
     return output
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+def is_root(path_p):
+    """
+    Returns True if the path given is the root of the filesystem.
+
+    :param path_p:
+            The path we are testing to see if it is the root path.
+
+    :return:
+            True if path_p is the root of the filesystem.
+    """
+
+    root = os.path.abspath(os.sep)
+    return path_p == root
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -239,10 +283,14 @@ def ancestor_contains_file(path_p,
             files, returns None.
     """
 
-    assert depth is None or type(depth) is int
-    assert os.path.exists(path_p)
-    assert os.path.isdir(path_p)
+    assert type(path_p) is str
     assert type(files_n) is str or type(files_n) is list
+    assert depth is None or type(depth) is int
+
+    if not os.path.exists(path_p):
+        raise ValueError(f"{path_p} does not exist.")
+    if not os.path.isdir(path_p):
+        raise ValueError(f"{path_p} is not a directory.")
 
     if type(files_n) != list:
         files_n = [files_n]
@@ -271,15 +319,15 @@ def ancestor_contains_file(path_p,
         if depth and count >= depth:
             return None
 
-        # TODO: Probably not windows safe
         # Check to see if we are at the root level (bail if we are)
-        if os.path.dirname(test_p) == test_p:
+        if is_root(os.path.dirname(test_p)):
             if already_at_root:
                 return None
             already_at_root = True
 
 
 # ----------------------------------------------------------------------------------------------------------------------
+# TODO: Actually make this work. Does nothing at the moment
 def lock_dir(path_d):
     """
     Changes the permissions on a directory so that it is readable and executable, but may not be otherwise altered.
@@ -291,11 +339,16 @@ def lock_dir(path_d):
             Nothing.
     """
 
-    assert os.path.exists(path_d)
-    assert os.path.isdir(path_d)
+    assert type(path_d) is str
+
+    if not os.path.exists(path_d):
+        raise ValueError(f"{path_d} does not exist.")
+    if not os.path.isdir(path_d):
+        raise ValueError(f"{path_d} is not a directory.")
 
 
 # ----------------------------------------------------------------------------------------------------------------------
+# TODO: make this windows friendly
 def symlink_source_is_in_dir(link_p,
                              path_d,
                              include_subdirs=True) -> bool:
@@ -316,7 +369,12 @@ def symlink_source_is_in_dir(link_p,
             True). False otherwise.
     """
 
-    assert os.path.islink(link_p)
+    assert type(link_p) is str
+    assert type(path_d) is str
+    assert type(include_subdirs) is bool
+
+    if not os.path.islink(link_p):
+        raise ValueError(f"{link_p} is not a symlink.")
 
     source_d, source_n = os.path.split(symlinks_to_real_paths(link_p)[0])
 
