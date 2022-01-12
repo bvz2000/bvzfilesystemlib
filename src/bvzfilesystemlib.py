@@ -5,8 +5,8 @@ import re
 # ----------------------------------------------------------------------------------------------------------------------
 def count_files_recursively(dir_d):
     """
-    Given a directory, returns the number of files in that directory AND all sub-directories. Does not include the
-    actual sub-directories in the count. Just the files they contain.
+    Given a directory, returns the number of files in that directory AND all subdirectories. Does not include the
+    actual subdirectories in the count. Just the files they contain.
 
     :param dir_d:
             The directory to count.
@@ -31,18 +31,18 @@ def invert_dir_list(parent_d,
                     pattern=None):
     """
     Given a parent directory and a list of directory names, returns any other directories in this parent dir that are
-    NOT in this list (effectively inverting the list of sub directories).
+    NOT in this list (effectively inverting the list of subdirectories).
 
     :param parent_d:
             The directory containing the sub-dirs we are trying to invert.
     :param subdirs_n:
-            A list of sub-directories that are the inverse of the ones we want to return.
+            A list of subdirectories that are the inverse of the ones we want to return.
     :param pattern:
-            An optional regex pattern to limit our inverse to. If None, then all sub directories will be included.
+            An optional regex pattern to limit our inverse to. If None, then all subdirectories will be included.
             Defaults to None.
 
     :return:
-            A list of all sub directories in parent_d that are not in the list subdirs_n.
+            A list of all subdirectories in parent_d that are not in the list subdirs_n.
     """
 
     assert type(subdirs_n) is list
@@ -123,7 +123,7 @@ def recursively_list_files_in_dirs(source_dirs_d):
             The directory or list of directories we want to recursively list. Accepts either a string or a list.
 
     :return:
-            A list of files with full paths that are in any of the directories (or any of their sub-directories)
+            A list of files with full paths that are in any of the directories (or any of their subdirectories)
     """
 
     assert type(source_dirs_d) is list or type(source_dirs_d) is str
@@ -132,7 +132,7 @@ def recursively_list_files_in_dirs(source_dirs_d):
         source_dirs_d = [source_dirs_d]
 
     for source_dir_d in source_dirs_d:
-        if not  os.path.exists(source_dir_d):
+        if not os.path.exists(source_dir_d):
             raise ValueError(f"{source_dir_d} does not exist.")
         if not os.path.isdir(source_dir_d):
             raise ValueError(f"{source_dir_d} is not a directory.")
@@ -155,7 +155,7 @@ def recursively_list_symlink_targets_in_dirs(source_dirs_d):
                 The directory or list of directories we want to recursively list. Accepts either a string or a list.
 
     :return:
-            A list of files with full paths that are in any of the directories (or any of their sub-directories)
+            A list of files with full paths that are in any of the directories (or any of their subdirectories)
     """
 
     assert type(source_dirs_d) is list or type(source_dirs_d) is str
@@ -164,7 +164,7 @@ def recursively_list_symlink_targets_in_dirs(source_dirs_d):
         source_dirs_d = [source_dirs_d]
 
     for source_dir_d in source_dirs_d:
-        if not  os.path.exists(source_dir_d):
+        if not os.path.exists(source_dir_d):
             raise ValueError(f"{source_dir_d} does not exist.")
         if not os.path.isdir(source_dir_d):
             raise ValueError(f"{source_dir_d} is not a directory.")
@@ -217,7 +217,7 @@ def dir_files_keyed_by_size(path_d):
     Builds a dictionary of file sizes in a directory. The key is the file size, the value is a list of file names.
 
     :param path_d:
-            The dir that contains the files we are evaluating. Does not traverse into sub-directories.
+            The dir that contains the files we are evaluating. Does not traverse into subdirectories.
 
     :return:
             A dict where the key is the file size, the value is a list of paths to the files of this size.
@@ -353,7 +353,7 @@ def symlink_source_is_in_dir(link_p,
                              path_d,
                              include_subdirs=True) -> bool:
     """
-    Returns True if the source file of the given link is in a directory or any of its sub-directories (depending on
+    Returns True if the source file of the given link is in a directory or any of its subdirectories (depending on
     options). Does not care if the source path does not actually exist or not.
 
     :param link_p:
@@ -361,7 +361,7 @@ def symlink_source_is_in_dir(link_p,
     :param path_d:
             The directory we are checking to see if the symlink source is inside of.
     :param include_subdirs:
-            Whether we should also consider being in a sub-directory of the above directory as "being in" this
+            Whether we should also consider being in a subdirectory of the above directory as "being in" this
             directory. Defaults to True
 
     :return:
