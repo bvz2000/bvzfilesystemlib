@@ -348,6 +348,27 @@ def lock_dir(path_d):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
+# TODO: Actually make this work. Does nothing at the moment
+def lock_file(path_p):
+    """
+    Changes the permissions on a file so that it is readable and executable, but may not be otherwise altered.
+
+    :param path_p:
+            The path to the file we want to lock.
+
+    :return:
+            Nothing.
+    """
+
+    assert type(path_p) is str
+
+    if not os.path.exists(path_p):
+        raise ValueError(f"{path_p} does not exist.")
+    if not os.path.isfile(path_p):
+        raise ValueError(f"{path_p} is not a file.")
+
+
+# ----------------------------------------------------------------------------------------------------------------------
 # TODO: make this windows friendly
 def symlink_source_is_in_dir(link_p,
                              path_d,
